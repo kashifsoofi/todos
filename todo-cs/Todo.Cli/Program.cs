@@ -1,5 +1,29 @@
 ﻿using System.CommandLine;
+using Microsoft.Extensions.DependencyInjection;
+using Todo.Application;
+using Todo.Cli.Actions;
+using Todo.Cli.Commands;
+using Todo.Infrastructure;
 
+var services = new ServiceCollection()
+    .AddTodoInfrastructure()
+    .AddTodoServices()
+    .AddSingleton<ListTodoItemsAction>()
+    .AddSingleton<AddTodoItemAction>()
+    .AddSingleton<CompleteTodoItemAction>()
+    .AddSingleton<RemoveTodoItemAction>()
+    .AddSingleton<ListTodoItemsCommand>()
+    .AddSingleton<AddTodoItemCommand>()
+    .AddSingleton<CompleteTodoItemCommand>()
+    .AddSingleton<RemoveTodoItemCommand>()
+    .AddSingleton<TodoCommand>();
+
+var serviceProvider = services.BuildServiceProvider();
+
+var rootCommand = serviceProvider.GetRequiredService<TodoCommand>();
+var parseResult = rootCommand.Parse(args);
+parseResult.Invoke();
+    
 var listCommand = new Command("--list");
 listCommand.SetAction(_ =>
 {
@@ -42,7 +66,7 @@ removeCommand.SetAction(parseResult =>
     return 0;
 });
 
-RootCommand rootCommand = new("todo cli app")
+RootCommand rootCommand1 = new("todo cli app")
 {
     listCommand,
     addCommand,
@@ -50,7 +74,7 @@ RootCommand rootCommand = new("todo cli app")
     removeCommand,
 };
 
-ParseResult parseResult = rootCommand.Parse(args);
+ParseResult parseResult1 = rootCommand1.Parse(args);
 parseResult.Invoke();
 
 static void ListTodoItems()
@@ -73,7 +97,3 @@ static void RemoveTodoItem(int id)
     
 }
 
-public record TodoItem(
-    int Id,
-    string Name,
-    bool IsComplete);
