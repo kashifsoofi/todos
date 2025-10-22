@@ -4,5 +4,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="ToDo.Cli/ToDo.Cli.csproj" />
+  <Project Path="Todo.Cli/Todo.Cli.csproj" />
 </Solution>
