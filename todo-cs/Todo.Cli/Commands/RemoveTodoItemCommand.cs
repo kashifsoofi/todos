@@ -9,6 +9,7 @@ public class RemoveTodoItemCommand : Command
     
     public RemoveTodoItemCommand(RemoveTodoItemAction action) : base("--remove", "Remove todo item")
     {
+        Aliases.Add("-r");
         Arguments.Add(_idArgument);
         
         Action = action;

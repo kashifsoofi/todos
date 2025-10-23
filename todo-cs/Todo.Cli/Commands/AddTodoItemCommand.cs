@@ -9,6 +9,7 @@ public class AddTodoItemCommand : Command
     
     public AddTodoItemCommand(AddTodoItemAction action) : base("--add", "Add todo item")
     {
+        Aliases.Add("-a");
         Arguments.Add(_nameArgument);
         
         Action = action;

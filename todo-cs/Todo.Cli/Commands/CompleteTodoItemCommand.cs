@@ -9,6 +9,7 @@ public class CompleteTodoItemCommand : Command
 
     public CompleteTodoItemCommand(CompleteTodoItemAction action) : base("--complete", "Complete todo item")
     {
+        Aliases.Add("-c");
         Arguments.Add(_idArgument);
         
         Action = action;

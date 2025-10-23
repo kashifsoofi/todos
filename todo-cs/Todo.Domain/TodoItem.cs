@@ -3,4 +3,7 @@
 public record TodoItem(
     string Id,
     string Name,
-    bool IsComplete);
+    bool IsComplete)
+{
+    public bool IsComplete { get; set; } = IsComplete;
+}

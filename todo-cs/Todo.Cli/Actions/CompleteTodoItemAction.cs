@@ -4,10 +4,20 @@ using Todo.Application;
 
 namespace Todo.Cli.Actions;
 
-public class CompleteTodoItemAction(TodoService todoService) : SynchronousCommandLineAction
+public class CompleteTodoItemAction(ITodoService todoService) : SynchronousCommandLineAction
 {
     public override int Invoke(ParseResult parseResult)
     {
-        throw new NotImplementedException();
+        var id = parseResult.GetRequiredValue<string>("id");
+        var completed = todoService.Complete(id);
+        if (completed == null)
+        {
+            Console.WriteLine($"No item found to complete with id: {id}");
+            return 1;
+        }
+        
+        Console.WriteLine("Todo item completed");
+        Console.WriteLine($"Id: {completed.Id}, Name: {completed.Name}");
+        return 0;
     }
 }

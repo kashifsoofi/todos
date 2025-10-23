@@ -6,7 +6,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddTodoInfrastructure(this IServiceCollection services)
     {
-        services.AddScoped<ITodoRepository, TodoRepository>();
+        services.AddScoped<ITodoStore, JsonFileTodoStore>();
         
         return services;
     }

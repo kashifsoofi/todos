@@ -6,38 +6,32 @@ namespace Todo.Application;
 public interface ITodoService
 {
     List<TodoItem> GetAll();
-    TodoItem Add(string name);
-    TodoItem GetById(string id);
-    TodoItem Complete(string id);
-    TodoItem Remove(string id);
+    TodoItem? Add(string name);
+    TodoItem? Complete(string id);
+    TodoItem? Remove(string id);
 }
 
-public class TodoService(ITodoRepository repository) : ITodoService
+public class TodoService(ITodoStore store) : ITodoService
 {
     public List<TodoItem> GetAll()
     {
-        return repository.GetAll();
+        return store.GetAll();
     }
 
-    public TodoItem Add(string name)
+    public TodoItem? Add(string name)
     {
         var id = Guid.NewGuid().ToString("N").Substring(0, 5);
         var todoItem = new TodoItem(id, name, false);
-        return repository.Add(todoItem);
+        return store.Add(todoItem);
+    }
+    
+    public TodoItem? Complete(string id)
+    {
+        return store.Complete(id);
     }
 
-    public TodoItem GetById(string id)
+    public TodoItem? Remove(string id)
     {
-        return repository.GetById(id);
-    }
-
-    public TodoItem Complete(string id)
-    {
-        return repository.Complete(id);
-    }
-
-    public TodoItem Remove(string id)
-    {
-        return repository.Remove(id);
+        return store.Remove(id);
     }
 }

@@ -7,6 +7,7 @@ public class ListTodoItemsCommand : Command
 {
     public ListTodoItemsCommand(ListTodoItemsAction action) : base("--list", "List all todo items")
     {
+        Aliases.Add("-l");
         Action = action;
     }
 }

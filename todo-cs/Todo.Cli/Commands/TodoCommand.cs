@@ -4,7 +4,7 @@ namespace Todo.Cli.Commands;
 
 public class TodoCommand : RootCommand
 {
-    public TodoCommand(IList<Command> subCommands)
+    public TodoCommand(IEnumerable<Command> subCommands)
     {
         foreach (var subCommand in subCommands)
         {
