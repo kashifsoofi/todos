@@ -1,0 +1,116 @@
+﻿@page "/"
+@using Blazored.LocalStorage
+@using Todo.BlazorWasm.Components
+@using Todo.Domain
+@inject ILocalStorageService localStorage
+
+<PageTitle>Todo Application</PageTitle>
+
+
+<div class="app-container @appTheme">
+    <div class="hero">
+        <div class="container">
+            <TodoHeader
+                AppTitle="TODO"
+                LightIcon="las la-sun"
+                DarkIcon="las la-moon"
+                ToggleState="ToggleTheme"
+            />
+
+            <div class="body-container">
+                <input type="text" placeholder="Create a new todo item..." @bind="todoItemName" @bind:event="oninput"
+                    @onkeydown="AddTodoItem">
+
+                <div class="todos-container">
+                    @if(!todoItems.Any()) 
+                    {
+                        <p class="no-tasks-text">
+                            Start adding some tasks! ✅
+                        </p>
+                    } else 
+                    {
+                        @foreach (var todoItem in todoItems)
+                        {
+                            <TodoComponent 
+                                TodoItem="todoItem" 
+                                RemoveAnimation="@String.Empty"
+                                OnRemoveTodo="RemoveTodoItem"
+                                OnCheckTodo="UpdateTodoList"/>
+                        }
+                    }
+                </div>
+
+                <TodoFilter
+                    ItemsLeft="todoItems.Count()" 
+                    FilterOptions="filterOptions" 
+                    FilterBy="FilterTodoList" 
+                    ClearCompleted="ClearCompletedTasks"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<TodoItem> todoItems = [];
+    private string todoItemName = string.Empty;
+    private string appTheme = string.Empty;
+    public Dictionary<string, string> filterOptions = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        appTheme = await localStorage.GetItemAsync<string>("appTheme") ?? "";
+        
+        todoItems = await localStorage.GetItemAsync<List<TodoItem>>("todoItems") ?? Enumerable.Empty<TodoItem>().ToList();
+
+        filterOptions.Add("all", "All");
+        filterOptions.Add("active", "Active");
+        filterOptions.Add("completed", "Completed");
+    }
+
+    private async Task AddTodoItem(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(todoItemName))
+        {
+            var id = Guid.NewGuid().ToString("N")[..5];
+            var newTodoItem = new TodoItem(id, todoItemName, false);
+            todoItems.Add(newTodoItem);
+            await localStorage.SetItemAsync("todoItems", todoItems);
+            todoItemName = string.Empty;
+        }
+    }
+
+    private async Task UpdateTodoList()
+    {
+        await localStorage.SetItemAsync("todoItems", todoItems);
+    }
+
+    private async Task RemoveTodoItem(TodoItem todo)
+    {
+        todoItems.Remove(todo);
+        await localStorage.SetItemAsync("todoItems", todoItems);
+    }
+
+    private async Task ToggleTheme(bool isDarkTheme)
+    {
+        appTheme = isDarkTheme ? "dark-theme" : "";
+        await localStorage.SetItemAsync<string>("appTheme", appTheme);
+    }
+
+    private async Task FilterTodoList(string filterOption)
+    {
+        todoItems = await localStorage.GetItemAsync<List<TodoItem>>("todoItems") ?? Enumerable.Empty<TodoItem>().ToList();
+
+        todoItems = filterOption switch
+        {
+            "active" =>  todoItems.Where(x => !x.IsComplete).ToList(),
+            "completed" => todoItems.Where(x => x.IsComplete).ToList(),
+            _ =>  await localStorage.GetItemAsync<List<TodoItem>>("todoItems") ?? Enumerable.Empty<TodoItem>().ToList()
+        };
+    }
+
+    private async Task ClearCompletedTasks() {
+        todoItems = await localStorage.GetItemAsync<List<TodoItem>>("todoItems") ?? Enumerable.Empty<TodoItem>().ToList();
+        todoItems = todoItems.Where(x => !x.IsComplete).ToList();
+        await localStorage.SetItemAsync("todoItems", todoItems);
+    }
+}
