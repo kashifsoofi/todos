@@ -41,6 +41,11 @@ public class JsonFileTodoStore : ITodoStore
         var jsonData = JsonSerializer.Serialize(items);
         File.WriteAllText(_filePath, jsonData, Encoding.UTF8);
     }
+
+    public void SaveAll(List<TodoItem> items)
+    {
+        WriteData(items);
+    }
     
     public List<TodoItem> GetAll()
     {
