@@ -8,4 +8,5 @@ public interface ITodoStore
     TodoItem? Add(TodoItem item);
     TodoItem? Complete(string id);
     TodoItem? Remove(string id);
+    void SaveAll(List<TodoItem> items);
 }

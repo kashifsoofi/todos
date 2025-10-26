@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Todo.Avalonia.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="500"
+        Width="300" Height="500" Padding="4"
+        x:Class="Todo.Avalonia.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Todo.Avalonia">
+
+        <Design.DataContext>
+            <vm:MainWindowViewModel />
+        </Design.DataContext>
+    
+        <Grid RowDefinitions="Auto, *, Auto" x:Name="Root">
+            <TextBlock Classes="h1" Text="My Todo List" />
+            
+            <ScrollViewer Grid.Row="1">
+                <ItemsControl ItemsSource="{Binding TodoItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="vm:TodoItemViewModel">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <CheckBox Content="{Binding Name}"
+                                          IsChecked="{Binding IsComplete}" />
+                                
+                                <Button Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).RemoveTodoItemCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Grid.Column="1">
+                                    <PathIcon Data="{DynamicResource DeleteIconData}" Foreground="Red" />
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            
+            <TextBox Grid.Row="2"
+                     Text="{Binding NewTodoItemName}"
+                     Watermark="Add new todo item">
+                <TextBox.InnerRightContent>
+                    <Button Command="{Binding AddTodoItemCommand}">
+                        <PathIcon Data="{DynamicResource AcceptIconData}" Foreground="Green" />
+                    </Button>
+                </TextBox.InnerRightContent>
+                <TextBox.KeyBindings>
+                    <KeyBinding Command="{Binding AddTodoItemCommand}" Gesture="Enter" />
+                </TextBox.KeyBindings>
+            </TextBox>
+        </Grid>
+</Window>
