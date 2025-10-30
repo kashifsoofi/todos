@@ -4,10 +4,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Todo.Application\Todo.Application.csproj" />
-  <Project Path="Todo.Avalonia\Todo.Avalonia.csproj" Type="Classic C#" />
   <Project Path="Todo.BlazorWasm\Todo.BlazorWasm.csproj" />
-  <Project Path="Todo.Cli/Todo.Cli.csproj" />
   <Project Path="Todo.Domain\Todo.Domain.csproj" />
-  <Project Path="Todo.Infrastructure\Todo.Infrastructure.csproj" />
 </Solution>
