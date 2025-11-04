@@ -8,8 +8,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddTodoInfrastructure(this IServiceCollection services)
     {
-        services.AddScoped<ITodoStore, JsonFileTodoStore>();
-        services.AddScoped<ITodoItemRepository, JsonFileTodoItemRepository>();
+        services.AddScoped<ITodoItemAggregateRepository, JsonFileTodoItemAggregateRepository>();
         
         return services;
     }

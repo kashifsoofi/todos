@@ -22,4 +22,4 @@ var serviceProvider = services.BuildServiceProvider();
 
 var rootCommand = serviceProvider.GetRequiredService<TodoCommand>();
 var parseResult = rootCommand.Parse(args);
-parseResult.Invoke();
+await parseResult.InvokeAsync();

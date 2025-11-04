@@ -1,6 +1,7 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Todo.Domain;
+using Todo.Domain.Aggregates.TodoItem;
 
 namespace Todo.Avalonia.ViewModels;
 
@@ -16,15 +17,15 @@ public partial class TodoItemViewModel : ViewModelBase
         _isComplete = false;
     }
 
-    public TodoItemViewModel(TodoItem todoItem)
+    public TodoItemViewModel(TodoItemAggregate todoItem)
     {
         _id = todoItem.Id;
         _name = todoItem.Name;
         _isComplete = todoItem.IsComplete;
     }
     
-    public TodoItem GetTodoItem()
+    public TodoItemAggregate GetTodoItem()
     {
-        return new TodoItem(Id, Name, IsComplete);
+        return new TodoItemAggregate(Id, Name, IsComplete);
     }
 }
