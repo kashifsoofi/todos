@@ -5,6 +5,7 @@ using Avalonia.Markup.Xaml;
 using Todo.Avalonia.ViewModels;
 using Todo.Avalonia.Views;
 using Todo.Infrastructure;
+using Todo.Infrastructure.AggregateRepositories.TodoItem;
 
 namespace Todo.Avalonia;
 
@@ -37,7 +38,7 @@ public partial class App : global::Avalonia.Application
 
     private void InitMainWindowViewModel()
     {
-        var todoStore = new JsonFileTodoStore();
+        var todoStore = new JsonFileTodoItemAggregateRepository();
         var savedTodoItems = todoStore.GetAll();
 
         if (savedTodoItems.Count > 0)
@@ -72,8 +73,8 @@ public partial class App : global::Avalonia.Application
         {
             var itemsToSave = _mainWindowViewModel.TodoItems.Select(x => x.GetTodoItem()).ToList();
 
-            var todoStore = new JsonFileTodoStore();
-            todoStore.SaveAll(itemsToSave);
+            var todoStore = new JsonFileTodoItemAggregateRepository();
+            // todoStore.SaveAll(itemsToSave);
             
             _canClose = true;
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

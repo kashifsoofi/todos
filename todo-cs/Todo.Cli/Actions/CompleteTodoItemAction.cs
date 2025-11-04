@@ -1,15 +1,17 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using MediatR;
 using Todo.Application;
+using Todo.Application.Handlers.CompleteTodoItem;
 
 namespace Todo.Cli.Actions;
 
-public class CompleteTodoItemAction(ITodoService todoService) : SynchronousCommandLineAction
+public class CompleteTodoItemAction(IMediator mediator) : AsynchronousCommandLineAction
 {
-    public override int Invoke(ParseResult parseResult)
+    public override async Task<int> InvokeAsync(ParseResult parseResult, CancellationToken cancellationToken = new())
     {
         var id = parseResult.GetRequiredValue<string>("id");
-        var completed = todoService.Complete(id);
+        var completed = await mediator.Send(new CompleteTodoItemCommand(id), cancellationToken);
         if (completed == null)
         {
             Console.WriteLine($"No item found to complete with id: {id}");

@@ -6,7 +6,10 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddTodoServices(this IServiceCollection services)
     {
-        services.AddScoped<ITodoService, TodoService>();
+        services.AddMediatR(configuration =>
+        {
+            configuration.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
+        });
 
         return services;
     }
