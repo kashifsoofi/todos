@@ -6,9 +6,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddTodoServices(this IServiceCollection services)
     {
-        services.AddMediatR(configuration =>
+        services.AddMediatR(cfg =>
         {
-            configuration.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
         });
 
         return services;

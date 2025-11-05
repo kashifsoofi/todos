@@ -2,13 +2,18 @@
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediatR;
+using Todo.Application.Handlers.CreateTodoItem;
 
 namespace Todo.Avalonia.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    public MainWindowViewModel()
+    private readonly IMediator _mediator;
+
+    public MainWindowViewModel(IMediator mediator)
     {
+        _mediator = mediator;
         _newTodoItemName = string.Empty;
 
         if (Design.IsDesignMode)
@@ -23,7 +28,9 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanAddTodoItem))]
     private void AddTodoItem()
     {
-        TodoItems.Add(new TodoItemViewModel { Name = NewTodoItemName });
+        var itemCreated = _mediator.Send(new CreateTodoItemCommand(NewTodoItemName)).GetAwaiter().GetResult();
+        TodoItems.Add(new TodoItemViewModel { Id = itemCreated.Id, Name = itemCreated.Name, IsComplete = itemCreated.IsComplete });
+        
         NewTodoItemName = string.Empty;
     }
     
@@ -36,6 +43,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void RemoveTodoItem(TodoItemViewModel item)
     {
+        _ = _mediator.Send(new CreateTodoItemCommand(item.Id)).GetAwaiter().GetResult();
         TodoItems.Remove(item);
     }
 }

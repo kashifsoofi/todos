@@ -69,12 +69,21 @@ public class JsonFileTodoItemAggregateRepository : ITodoItemAggregateRepository
         }
         
         var jsonData = File.ReadAllText(_filePath);
-        return JsonSerializer.Deserialize<List<TodoItemAggregate>>(jsonData);
+        var todoItemDtoList = JsonSerializer.Deserialize<List<TodoItemDto>>(jsonData);
+        if (todoItemDtoList == null)
+        {
+            return [];
+        }
+        
+        return todoItemDtoList.Select(x => new TodoItemAggregate(x.Id, x.Name, x.IsComplete)).ToList(); JsonSerializer.Deserialize<List<TodoItemAggregate>>(jsonData);
     }
 
     private void WriteData(List<TodoItemAggregate> items)
     {
-        var jsonData = JsonSerializer.Serialize(items);
+        var todoItemDtoList = items.Select(x => new TodoItemDto(x.Id, x.Name, x.IsComplete)).ToList();
+        var jsonData = JsonSerializer.Serialize(todoItemDtoList);
         File.WriteAllText(_filePath, jsonData, Encoding.UTF8);
     }
+    
+    public record TodoItemDto(string Id, string Name,  bool IsComplete);
 }

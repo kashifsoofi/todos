@@ -1,9 +1,13 @@
+using System;
 using System.Linq;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Microsoft.Extensions.DependencyInjection;
+using Todo.Application;
 using Todo.Avalonia.ViewModels;
 using Todo.Avalonia.Views;
+using Todo.Domain.Aggregates.TodoItem;
 using Todo.Infrastructure;
 using Todo.Infrastructure.AggregateRepositories.TodoItem;
 
@@ -11,15 +15,23 @@ namespace Todo.Avalonia;
 
 public partial class App : global::Avalonia.Application
 {
+    private IServiceProvider _serviceProvider;
+    
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
-    
-    private readonly MainWindowViewModel _mainWindowViewModel = new();
 
     public override void OnFrameworkInitializationCompleted()
     {
+        var collection = new ServiceCollection()
+            .AddTodoServices()
+            .AddTodoInfrastructure()
+            .AddSingleton<MainWindowViewModel>();
+
+        _serviceProvider = collection.BuildServiceProvider();
+        
+        var vm = _serviceProvider.GetRequiredService<MainWindowViewModel>();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
@@ -27,7 +39,14 @@ public partial class App : global::Avalonia.Application
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = _mainWindowViewModel,
+                DataContext = vm,
+            };
+        }
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
+        {
+            singleViewPlatform.MainView = new MainWindow
+            {
+                DataContext = vm
             };
         }
 
@@ -38,14 +57,16 @@ public partial class App : global::Avalonia.Application
 
     private void InitMainWindowViewModel()
     {
-        var todoStore = new JsonFileTodoItemAggregateRepository();
-        var savedTodoItems = todoStore.GetAll();
+        var repository = _serviceProvider.GetRequiredService<ITodoItemAggregateRepository>();
+        var savedTodoItems = repository.GetAll();
 
         if (savedTodoItems.Count > 0)
         {
+            var vm = _serviceProvider.GetRequiredService<MainWindowViewModel>();
+            
             foreach (var todoItem in savedTodoItems)
             {
-                _mainWindowViewModel.TodoItems.Add(new TodoItemViewModel(todoItem));
+                vm.TodoItems.Add(new TodoItemViewModel(todoItem));
             }
         }
     }
@@ -67,20 +88,21 @@ public partial class App : global::Avalonia.Application
 
     private void DesktopOnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
     {
-        e.Cancel = !_canClose;
-
-        if (!_canClose)
-        {
-            var itemsToSave = _mainWindowViewModel.TodoItems.Select(x => x.GetTodoItem()).ToList();
-
-            var todoStore = new JsonFileTodoItemAggregateRepository();
-            // todoStore.SaveAll(itemsToSave);
-            
-            _canClose = true;
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                desktop.Shutdown();
-            }
-        }
+        // e.Cancel = !_canClose;
+        //
+        // if (!_canClose)
+        // {
+        //     var vm = _serviceProvider.GetRequiredService<MainWindowViewModel>();
+        //     var itemsToSave = vm.TodoItems.Select(x => x.GetTodoItem()).ToList();
+        //
+        //     var todoStore = new JsonFileTodoItemAggregateRepository();
+        //     // todoStore.SaveAll(itemsToSave);
+        //     
+        //     _canClose = true;
+        //     if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        //     {
+        //         desktop.Shutdown();
+        //     }
+        // }
     }
 }
