@@ -418,3 +418,10 @@ FodyWeavers.xsd
 *.msp
 .DS_Store
 .idea
+
+debug/
+target/
+
+Cargo.lock
+
+**/*.rs.bk
