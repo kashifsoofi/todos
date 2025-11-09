@@ -13,11 +13,11 @@ public class RemoveTodoItemAction(IMediator mediator) : AsynchronousCommandLineA
         var removed = await mediator.Send(new RemoveTodoItemCommand(id), cancellationToken);
         if (removed == null)
         {
-            Console.WriteLine($"No item found to complete with id: {id}");
+            Console.WriteLine($"No item found to remove with id: {id}");
             return 1;
         }
         
-        Console.WriteLine("Todo item completed");
+        Console.WriteLine("Todo item removed");
         Console.WriteLine($"Id: {removed.Id}, Name: {removed.Name}");
         return 0;
     }

@@ -48,16 +48,18 @@ public class JsonFileTodoItemAggregateRepository : ITodoItemAggregateRepository
         var todoItems = ReadData() ?? [];
         
         var todoItemToUpdate = todoItems.First(t => t.Id == todoItem.Id);
-        todoItems.Remove(todoItemToUpdate);
+        var index = todoItems.IndexOf(todoItemToUpdate);
+        todoItems[index] = todoItem;
         
-        todoItems.Add(todoItem);
         WriteData(todoItems);
     }
 
     public void Delete(TodoItemAggregate todoItem)
     {
         var todoItems = ReadData() ?? [];
-        todoItems.Remove(todoItem);
+        
+        var todoItemToDelete = todoItems.First(t => t.Id == todoItem.Id);
+        todoItems.Remove(todoItemToDelete);
         WriteData(todoItems);
     }
     
