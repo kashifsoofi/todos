@@ -1,31 +1,60 @@
-use std::env;
+use std::path::PathBuf;
 use crate::domain::TodoItem;
+use directories::BaseDirs;
+use std::fs;
+use serde::{Deserialize, Serialize};
 
 pub struct TodoItemRepository {
-    // domain: Vec<TodoItem>,
+    file_path: PathBuf,
 }
 
 impl TodoItemRepository {
     pub fn new() -> Self {
-        let data_home = env::var("XDG_DATA");
-        let data_home = match env::var("XDG_DATA") {
-            Ok(value) => value,
-            Err(_) => {
-                
-            }
+        let data_dir = get_data_dir();
+        fs::create_dir_all(&data_dir).unwrap();
+
+        let file_path = data_dir.join("todo-store.json");
+        Self {
+            file_path,
         }
-        }
-        if Some(data_home) = data_home {
-            println!(")
-        if let !Ok(data_home) = env::var("XDG_DATA_HOME") {
-            println!("data home: {}", data_home);
+    }
+
+    pub fn get_all(&self) -> Vec<TodoItem> {
+        self.read_data()
+    }
+
+    fn read_data(&self) -> Vec<TodoItem> {
+        if !fs::metadata(self.file_path.as_path()).is_ok() {
+            return vec![];
         }
 
-        var dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
-        if (string.IsNullOrEmpty(dataHome))
-        @@ -25,67 +25,56 @@ public class JsonFileTodoStore : ITodoStore
-        _filePath = Path.Combine(dataHome!, "todo-store.json");
+        let json_data = fs::read_to_string(self.file_path.as_path()).unwrap();
+        let dto_list = serde_json::from_str::<Vec<TodoItemDto>>(&json_data);
+        match dto_list {
+            Ok(r) => r.into_iter().map(|dto| TodoItem::new(dto.id, dto.name, dto.is_complete)).collect(),
+            Err(e) => {
+                println!("Error reading data: {}", e);
+                vec![]
+            }
+        }
     }
-    pub fn list(&self) -> Vec<TodoItem> {
-    }
+
+    // fn write_data(&self, todo_items: Vec<TodoItem>) {
+    //     let dto_list: Vec<TodoItemDto> = todo_items.into_iter().map(|item| TodoItemDto { id: item.id, name: item.name, is_complete: item.is_complete }).collect();
+    //     let json_data = serde_json::to_string_pretty(&dto_list).unwrap();
+    //     fs::write(self.file_path.as_path(), json_data).unwrap();
+    // }
+}
+
+fn get_data_dir() -> PathBuf {
+    let base_dirs = BaseDirs::new().unwrap();
+    base_dirs.data_local_dir().join("todo")
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct TodoItemDto {
+    id: String,
+    name: String,
+    is_complete: bool,
 }

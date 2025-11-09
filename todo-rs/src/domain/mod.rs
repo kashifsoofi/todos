@@ -13,7 +13,7 @@ impl TodoItem {
         }
     }
 
-    pub fn new(name: String) -> Self {
-        new(String::from("0"), name, false)
-    }
+    // pub fn new_with_name(name: String) -> Self {
+    //     TodoItem::new(String::from("0"), name, false)
+    // }
 }

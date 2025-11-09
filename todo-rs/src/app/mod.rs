@@ -1,8 +1,3 @@
-use serde::{Deserialize, Serialize};
+mod list;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct TodoItem {
-    pub id: String,
-    pub name: String,
-    pub is_complete: bool,
-}
+pub use list::todo_items_list;
