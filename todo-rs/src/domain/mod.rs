@@ -1,3 +1,4 @@
+#[derive(Debug, Clone)]
 pub struct TodoItem {
     pub id: String,
     pub name: String,
@@ -12,8 +13,4 @@ impl TodoItem {
             is_complete,
         }
     }
-
-    // pub fn new_with_name(name: String) -> Self {
-    //     TodoItem::new(String::from("0"), name, false)
-    // }
 }

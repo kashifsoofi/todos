@@ -23,6 +23,31 @@ impl TodoItemRepository {
         self.read_data()
     }
 
+    pub fn get_by_id(&self, id: String) -> Option<TodoItem> {
+        let todo_items = self.read_data();
+        todo_items.into_iter().find(|item| item.id == id)
+    }
+
+    pub fn create(&self, todo_item: TodoItem) {
+        let mut todo_items = self.read_data();
+        todo_items.push(todo_item);
+        self.write_data(todo_items);
+    }
+
+    pub fn update(&self, todo_item: TodoItem) {
+        let mut todo_items = self.read_data();
+        let index = todo_items.iter().position(|item| item.id == todo_item.id).unwrap();
+        todo_items[index] = todo_item;
+        self.write_data(todo_items);
+    }
+
+    pub fn remove(&self, todo_item: TodoItem) {
+        let mut todo_items = self.read_data();
+        let index = todo_items.iter().position(|item| item.id == todo_item.id).unwrap();
+        todo_items.remove(index);
+        self.write_data(todo_items);
+    }
+
     fn read_data(&self) -> Vec<TodoItem> {
         if !fs::metadata(self.file_path.as_path()).is_ok() {
             return vec![];
@@ -39,11 +64,11 @@ impl TodoItemRepository {
         }
     }
 
-    // fn write_data(&self, todo_items: Vec<TodoItem>) {
-    //     let dto_list: Vec<TodoItemDto> = todo_items.into_iter().map(|item| TodoItemDto { id: item.id, name: item.name, is_complete: item.is_complete }).collect();
-    //     let json_data = serde_json::to_string_pretty(&dto_list).unwrap();
-    //     fs::write(self.file_path.as_path(), json_data).unwrap();
-    // }
+    fn write_data(&self, todo_items: Vec<TodoItem>) {
+        let dto_list: Vec<TodoItemDto> = todo_items.into_iter().map(|item| TodoItemDto { id: item.id, name: item.name, is_complete: item.is_complete }).collect();
+        let json_data = serde_json::to_string_pretty(&dto_list).unwrap();
+        fs::write(self.file_path.as_path(), json_data).unwrap();
+    }
 }
 
 fn get_data_dir() -> PathBuf {

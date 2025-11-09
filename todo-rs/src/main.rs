@@ -2,7 +2,7 @@ mod domain;
 mod infrastructure;
 mod app;
 
-use app::todo_items_list;
+use app::{list_todo_items, create_todo_item, complete_todo_item, remove_todo_item};
 use infrastructure::TodoItemRepository;
 
 use clap::{Parser, Subcommand};
@@ -36,20 +36,34 @@ enum Commands {
 
 fn main() {
     let cli = Cli::parse();
+    let repository = TodoItemRepository::new();
 
     match cli.command {
-        Some(Commands::List) => list(),
-        Some(Commands::Add { name }) => println!("adding new node: {}", name),
-        Some(Commands::Complete { id }) => println!("completing {}", id),
-        Some(Commands::Remove { id }) => println!("removing {}", id),
+        Some(Commands::List) => list(repository),
+        Some(Commands::Add { name }) => {
+            let item = create_todo_item(&repository, name);
+            println!("Created todo item, id:{}, name:{}, is_complete: false{}", item.id, item.name, item.is_complete);
+        },
+        Some(Commands::Complete { id }) => {
+            let item = complete_todo_item(&repository, id.to_string());
+            match item {
+                Some(item) => println!("Completed todo item, id:{}, name:{}, is_complete: false{}", item.id, item.name, item.is_complete),
+                None => eprintln!("No todo item found with id {}", id),
+            }
+        },
+        Some(Commands::Remove { id }) => {
+            let item = remove_todo_item(&repository, id.to_string());
+            match item {
+                Some(item) => println!("Removed todo item, id:{}, name:{}, is_complete: false{}", item.id, item.name, item.is_complete),
+                None => eprintln!("No todo item found with id {}", id),
+            }
+        },
         None => {},
     }
 }
 
-fn list() {
-    let repository = TodoItemRepository::new();
-
-    let items = todo_items_list(&repository);
+fn list(repository: TodoItemRepository) {
+    let items = list_todo_items(&repository);
     for item in items {
         println!("{}    {}      {}", item.id, item.name, item.is_complete);
     }
