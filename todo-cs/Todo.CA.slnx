@@ -4,8 +4,8 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Todo.Application\Todo.Application.csproj" />
-  <Project Path="Todo.Cli/Todo.Cli.csproj" />
+  <Project Path="Todo.Ca.Application\Todo.Ca.Application.csproj" />
+  <Project Path="Todo.Ca.Cli\Todo.Ca.Cli.csproj" />
+  <Project Path="Todo.Ca.Infrastructure\Todo.Ca.Infrastructure.csproj" />
   <Project Path="Todo.Domain\Todo.Domain.csproj" />
-  <Project Path="Todo.Infrastructure\Todo.Infrastructure.csproj" />
 </Solution>
