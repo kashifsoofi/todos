@@ -5,5 +5,4 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="Todo.BlazorWasm\Todo.BlazorWasm.csproj" />
-  <Project Path="Todo.Domain\Todo.Domain.csproj" />
 </Solution>

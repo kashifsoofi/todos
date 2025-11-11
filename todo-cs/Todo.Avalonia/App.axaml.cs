@@ -4,12 +4,11 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
-using Todo.Application;
 using Todo.Avalonia.ViewModels;
 using Todo.Avalonia.Views;
+using Todo.Ca.Application;
+using Todo.Ca.Infrastructure;
 using Todo.Domain.Aggregates.TodoItem;
-using Todo.Infrastructure;
-using Todo.Infrastructure.AggregateRepositories.TodoItem;
 
 namespace Todo.Avalonia;
 
